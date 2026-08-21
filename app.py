@@ -66,10 +66,14 @@ price_per_ton = {
 # ── Home page ─────────────────────────────────────────────────────
 @app.route('/')
 def index():
-    crops   = list(le_crop.classes_)
-    soils   = list(le_soil.classes_)
-    regions = list(le_region.classes_)
-    return render_template('index.html', crops=crops, soils=soils, regions=regions)
+    try:
+        crops   = list(le_crop.classes_)
+        soils   = list(le_soil.classes_)
+        regions = list(le_region.classes_)
+        return render_template('index.html', crops=crops, soils=soils, regions=regions)
+    except Exception as e:
+        print(f"Error in index route: {e}")
+        return f"<h3>Application Error: {e}</h3>", 500
 
 # ── Prediction ────────────────────────────────────────────────────
 @app.route('/predict', methods=['POST'])
