@@ -6,9 +6,12 @@ from flask import Flask, render_template, request
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 
-app = Flask(__name__)
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+
+app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
+
 MODEL_PATH = os.path.join(BASE_DIR, 'model.pkl')
 DATA_PATH = os.path.join(BASE_DIR, 'crop_data.csv')
 
