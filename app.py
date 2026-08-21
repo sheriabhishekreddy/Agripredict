@@ -1,17 +1,56 @@
-from flask import Flask, render_template, request
+import os
 import pickle
 import numpy as np
+import pandas as pd
+from flask import Flask, render_template, request
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import LabelEncoder
 
 app = Flask(__name__)
 
-# ── Load model and encoders ───────────────────────────────────────
-with open('model.pkl', 'rb') as f:
-    data = pickle.load(f)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, 'model.pkl')
+DATA_PATH = os.path.join(BASE_DIR, 'crop_data.csv')
 
-model     = data['model']
-le_region = data['le_region']
-le_soil   = data['le_soil']
-le_crop   = data['le_crop']
+# ── Load model and encoders with automatic fallback training ───────
+def load_or_train_model():
+    if os.path.exists(MODEL_PATH):
+        try:
+            with open(MODEL_PATH, 'rb') as f:
+                data = pickle.load(f)
+            return data['model'], data['le_region'], data['le_soil'], data['le_crop']
+        except Exception as e:
+            print(f"Warning: Failed to load model.pkl ({e}). Retraining...")
+
+    df = pd.read_csv(DATA_PATH)
+    le_region = LabelEncoder()
+    le_soil   = LabelEncoder()
+    le_crop   = LabelEncoder()
+
+    df['Region']    = le_region.fit_transform(df['Region'])
+    df['Soil_Type'] = le_soil.fit_transform(df['Soil_Type'])
+    df['Crop']      = le_crop.fit_transform(df['Crop'])
+
+    X = df[['Region', 'Soil_Type', 'Crop', 'Rainfall_mm', 'Temperature_C', 'Fertilizer_kg']]
+    y = df['Yield_per_hectare']
+
+    model = RandomForestRegressor(n_estimators=100, random_state=42)
+    model.fit(X, y)
+
+    try:
+        with open(MODEL_PATH, 'wb') as f:
+            pickle.dump({
+                'model':     model,
+                'le_region': le_region,
+                'le_soil':   le_soil,
+                'le_crop':   le_crop
+            }, f)
+    except Exception as save_err:
+        print(f"Warning: Could not save model.pkl: {save_err}")
+
+    return model, le_region, le_soil, le_crop
+
+model, le_region, le_soil, le_crop = load_or_train_model()
 
 # ── Price per ton (₹) for each crop ──────────────────────────────
 price_per_ton = {
@@ -90,7 +129,9 @@ def predict():
         return render_template('index.html',
                                crops=crops, soils=soils, regions=regions,
                                prediction=True,
-                               crop=crop, area=area,
+                               region=region, soil=soil, crop=crop,
+                               rainfall=rainfall, temperature=temperature, fertilizer=fertilizer,
+                               area=area,
                                yield_per_hectare=round(yield_per_hectare, 2),
                                total_yield=total_yield,
                                income=f"{income:,.0f}",
@@ -101,4 +142,5 @@ def predict():
         return f"Error: {e}"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)

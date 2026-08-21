@@ -31,7 +31,7 @@
           --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      * {
+      *, *::before, *::after {
           box-sizing: border-box;
           margin: 0;
           padding: 0;
@@ -423,7 +423,7 @@
           color: var(--text-muted);
       }
 
-      /* Prediction Form Section */
+      /* Prediction Form Section - Fixed Responsive Layout */
       .prediction-card {
           background: var(--bg-card);
           border-radius: var(--radius-lg);
@@ -431,7 +431,10 @@
           box-shadow: var(--shadow-lg);
           border: 1px solid rgba(46, 125, 50, 0.12);
           max-width: 900px;
+          width: 100%;
           margin: 0 auto;
+          box-sizing: border-box;
+          overflow: hidden;
       }
 
       .prediction-header {
@@ -456,11 +459,20 @@
           display: grid;
           grid-template-columns: repeat(2, 1fr);
           gap: 24px;
+          width: 100%;
+          box-sizing: border-box;
       }
 
       .form-group {
           display: flex;
           flex-direction: column;
+          width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
+      }
+
+      .form-group.full-width {
+          grid-column: 1 / -1;
       }
 
       .form-group label {
@@ -472,28 +484,51 @@
 
       .form-group input,
       .form-group select {
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
           padding: 13px 16px;
           border: 1.5px solid var(--border);
           border-radius: var(--radius);
           font-size: 15px;
           font-family: inherit;
           color: var(--text-dark);
-          background: #fafafa;
+          background-color: #fafafa;
           transition: var(--transition);
           outline: none;
+      }
+
+      .form-group select {
+          cursor: pointer;
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232e7d32' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 16px center;
+          background-size: 14px;
+          padding-right: 40px;
       }
 
       .form-group input:focus,
       .form-group select:focus {
           border-color: var(--primary);
-          background: #ffffff;
+          background-color: #ffffff;
           box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.12);
       }
 
       .submit-area {
           text-align: center;
-          margin-top: 35px;
-          grid-column: span 2;
+          margin-top: 10px;
+          grid-column: 1 / -1;
+          width: 100%;
+      }
+
+      .submit-area .btn-primary {
+          width: 100%;
+          justify-content: center;
+          box-sizing: border-box;
       }
 
       /* Prediction Result Card */
@@ -505,8 +540,11 @@
           border-left: 8px solid var(--primary);
           margin-top: 50px;
           max-width: 900px;
+          width: 100%;
           margin-left: auto;
           margin-right: auto;
+          box-sizing: border-box;
+          overflow: hidden;
       }
 
       .result-title {
@@ -523,6 +561,7 @@
           grid-template-columns: repeat(3, 1fr);
           gap: 20px;
           margin-bottom: 30px;
+          width: 100%;
       }
 
       .result-box {
@@ -532,6 +571,8 @@
           border-radius: var(--radius);
           text-align: center;
           transition: var(--transition);
+          min-width: 0;
+          box-sizing: border-box;
       }
 
       .result-box:hover {
@@ -557,6 +598,7 @@
           color: var(--primary);
           font-size: 24px;
           font-weight: 700;
+          word-break: break-word;
       }
 
       .recommendation-alert {
@@ -566,6 +608,8 @@
           padding: 20px 24px;
           border-radius: var(--radius);
           margin-bottom: 35px;
+          width: 100%;
+          box-sizing: border-box;
       }
 
       .recommendation-alert h4 {
@@ -587,6 +631,7 @@
           overflow-x: auto;
           border-radius: var(--radius);
           border: 1px solid var(--border);
+          width: 100%;
       }
 
       table {
@@ -660,6 +705,7 @@
           gap: 25px;
           max-width: 900px;
           margin: 0 auto;
+          width: 100%;
       }
 
       .contact-card {
@@ -670,6 +716,8 @@
           border: 1px solid var(--border);
           box-shadow: var(--shadow-sm);
           transition: var(--transition);
+          width: 100%;
+          box-sizing: border-box;
       }
 
       .contact-card:hover {
@@ -734,7 +782,7 @@
           margin-bottom: 0;
       }
 
-      /* Media Queries */
+      /* Responsive Media Queries */
       @media (max-width: 992px) {
           .hero-grid {
               grid-template-columns: 1fr;
@@ -763,6 +811,10 @@
 
           .steps-grid {
               grid-template-columns: 1fr;
+          }
+
+          .result-grid {
+              grid-template-columns: repeat(2, 1fr);
           }
       }
 
@@ -793,10 +845,12 @@
 
           .form-grid {
               grid-template-columns: 1fr;
+              gap: 18px;
           }
 
+          .form-group.full-width,
           .submit-area {
-              grid-column: span 1;
+              grid-column: span 1 !important;
           }
 
           .result-grid {
@@ -811,7 +865,7 @@
           .prediction-card,
           .result-card,
           .about-card {
-              padding: 30px 20px;
+              padding: 25px 18px;
           }
       }
     </style>
@@ -953,7 +1007,7 @@
         </div>
     </section>
 
-    <!-- Step 9: Make prediction section attractive -->
+    <!-- Step 9: Make prediction section attractive & responsive -->
     <section class="section" id="prediction">
         <div class="container">
             <div class="section-header">
@@ -974,9 +1028,9 @@
                         <div class="form-group">
                             <label for="region">Region</label>
                             <select name="region" id="region" required>
-                                <option value="">Select Region ▼</option>
+                                <option value="">Select Region</option>
                                 {% for r in regions %}
-                                    <option value="{{ r }}" {% if crop and region == r %}selected{% endif %}>{{ r }}</option>
+                                    <option value="{{ r }}" {% if region and region == r %}selected{% endif %}>{{ r }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -984,9 +1038,9 @@
                         <div class="form-group">
                             <label for="soil">Soil Type</label>
                             <select name="soil" id="soil" required>
-                                <option value="">Select Soil Type ▼</option>
+                                <option value="">Select Soil Type</option>
                                 {% for s in soils %}
-                                    <option value="{{ s }}">{{ s }}</option>
+                                    <option value="{{ s }}" {% if soil and soil == s %}selected{% endif %}>{{ s }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -994,35 +1048,35 @@
                         <div class="form-group">
                             <label for="crop">Crop</label>
                             <select name="crop" id="crop" required>
-                                <option value="">Select Crop ▼</option>
+                                <option value="">Select Crop</option>
                                 {% for c in crops %}
-                                    <option value="{{ c }}">{{ c }}</option>
+                                    <option value="{{ c }}" {% if crop and crop == c %}selected{% endif %}>{{ c }}</option>
                                 {% endfor %}
                             </select>
                         </div>
 
                         <div class="form-group">
                             <label for="rainfall">Rainfall (mm)</label>
-                            <input type="number" name="rainfall" id="rainfall" step="0.01" min="0" placeholder="Example: 800" required>
+                            <input type="number" name="rainfall" id="rainfall" step="0.01" min="0" placeholder="Example: 800" value="{{ rainfall if rainfall is defined else '' }}" required>
                         </div>
 
                         <div class="form-group">
                             <label for="temperature">Temperature (°C)</label>
-                            <input type="number" name="temperature" id="temperature" step="0.01" placeholder="Example: 28" required>
+                            <input type="number" name="temperature" id="temperature" step="0.01" placeholder="Example: 28" value="{{ temperature if temperature is defined else '' }}" required>
                         </div>
 
                         <div class="form-group">
                             <label for="fertilizer">Fertilizer (kg)</label>
-                            <input type="number" name="fertilizer" id="fertilizer" step="0.01" min="0" placeholder="Example: 100" required>
+                            <input type="number" name="fertilizer" id="fertilizer" step="0.01" min="0" placeholder="Example: 100" value="{{ fertilizer if fertilizer is defined else '' }}" required>
                         </div>
 
-                        <div class="form-group" style="grid-column: span 2;">
+                        <div class="form-group full-width">
                             <label for="area">Land Area (hectares)</label>
-                            <input type="number" name="area" id="area" step="0.01" min="0.01" placeholder="Enter area (Example: 5)" required>
+                            <input type="number" name="area" id="area" step="0.01" min="0.01" placeholder="Enter area (Example: 5)" value="{{ area if area is defined else '' }}" required>
                         </div>
 
-                        <div class="submit-area">
-                            <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
+                        <div class="submit-area full-width">
+                            <button type="submit" class="btn-primary">
                                 🌱 Predict Yield
                             </button>
                         </div>
